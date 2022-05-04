@@ -1,0 +1,23 @@
+{
+    "name": "yuxiaobo/aop_cloud",
+    "description": "支付宝云支付非官方SDK",
+    "license": "mit",
+    "authors": [
+        {
+            "name": "edk24",
+            "email": "yuxiaobo64@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "jumdata\\": "src/"
+        }
+      },
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "9.5.x-dev"
+    }
+}
