@@ -1,10 +1,10 @@
 <?php
-namespace aop;
+namespace cloudpay;
 
 /**
  * 云支付配置
  * 
- * @author 余小波 <1421926943@qq.com>
+ * @author 余小波 <yuxiaobo64@gmail.com>
  */
 class Config {
 

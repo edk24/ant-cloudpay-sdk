@@ -1,7 +1,12 @@
 <?php
 
-namespace aop;
+namespace cloudpay;
 
+/**
+ * 响应结果
+ * 
+ * @author 余小波 <yuxiaobo64@gmail.com>
+ */
 class Response {
     protected $httpBody;
 
