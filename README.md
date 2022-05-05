@@ -33,15 +33,91 @@ $resp = $req->execute('ant.antfin.eco.cloudpay.trade.pay', array(
 
 ### 退款
 
-
-### 回调通知处理
-
 ```php
+$config = new Config();
+$config->setBAppId('云支付应用ID');
+$config->setGateway('云支付网关'); 
+$config->setRsaPrivateKey('私钥');
+$config->setAliPublicKey('支付宝公钥');
+$config->setCpMid('云支付商户id');
 
+$req = new Client($config);
+$resp = $req->execute('ant.antfin.eco.cloudpay.trade.refund', array(
+    'out_order_no'      => '1651715489', // 商户订单号,和第三方支付号不能同时为空
+    // 'trans_no'          => '12131', // 第三方支付号，和商户订单号不能同时为空
+    'refund_amount'      => '0.01', // 退款金额
+    'out_request_no'    => '131324', // 外部退款单号，标识一次退款请求
+    'notify_url'        => '2145',
+    // 'pay_channel'       => 'alipay', // 第三方支付类型，如果选择trans_no，则不能为空 [alipay, wechat]
+    // 云支付商户门店编号
+));
+```
 
+### Notify 通知回调处理
+
+**注意内容**
+
+1. 支付回调是 `POST` 请求, 携带如下 `JSON` 数据的 body
+2. 商户收到回调通知，进行对应业务处理后，须要返回处理结果。处理成功返回“success”字符串，处理失败可返回失败原因。
+3. 若商户返回失败（即不是“success”），云支付会按照一定的时间间隔，进行重试通知，重试结束后不再通知。重试时间规则，单位秒：15,30,60,300,600,1800,15,30,3600,15,30,7200,14400,28800,57600
+
+*示例数据 (退款)*
+
+```json
+{
+    "store_id": "20200901145300003099286200000650",
+    "wechat_refund_order_content_ext": "{}",
+    "notify_time": "1651719765776",
+    "refund_status": "REFUND_SUCCESS",
+    "trade_channel": "wechat",
+    "gmt_refund": "1651719761000",
+    "out_order_no": "1651719435",
+    "notify_combination_channel_refund_infos": "[]",
+    "notify_id": "20220505110200004600083200072234",
+    "notify_type": "REFUND_SYNC",
+    "total_amount": "0.01",
+    "refund_amount": "0.01",
+    "trade_no": "4200001421202205052017454108",
+    "out_request_no": "131324",
+    "refund_order_no": "20220505110200004600036200072231"
+}
+```
+
+*示例数据 (条码支付)*
+
+```json
+{
+    "order_no": "20220505105700004600036200072197",
+    "store_id": "20200901145300003099286200000650",
+    "gmt_payment": "1651719445000",
+    "notify_time": "1651719445743",
+    "trade_channel": "wechat",
+    "subject": "Iphone6 16G",
+    "wechat_order_content_ext": "{}",
+    "out_order_no": "1651719435",
+    "notify_combination_channel_pay_infos": "[]",
+    "merchant_id": "20191129183400001459645700000072",
+    "body": "Iphone6 16G",
+    "buyer_id": "o8uJ6uGXLlPFCpQA-F9UnLPnF3tw",
+    "notify_id": "20220505105700004600083200072203",
+    "notify_type": "TRADE_SYNC",
+    "total_amount": "0.01",
+    "isv_id": "20191129153900001401755600000066",
+    "trade_status": "ORDER_SUCCESS",
+    "trade_no": "4200001421202205052017454108",
+    "receipt_amount": "0.01",
+    "buyer_pay_amount": "0.01"
+}
 ```
 
 
-### End
+**如何验签**
 
-*签名部分代码参考官方 `for php` 示例中的封装*
+```php
+$success = $aop->checkSign($_POST);
+if ($success == false) {
+    die('error');
+}
+
+die('success');
+```
