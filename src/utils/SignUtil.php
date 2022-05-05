@@ -87,7 +87,7 @@ class SignUtil
         } else {
             openssl_sign($data, $sign, $res);
         }
-        if (!CommonUtil::checkEmpty($this->rsaPrivateKeyFilePath)) {
+        if (!CommonUtil::checkEmpty($this->config->getRsaPrivateKeyFilePath())) {
             openssl_free_key($res);
         }
         $sign = base64_encode($sign);
