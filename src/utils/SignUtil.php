@@ -1,20 +1,23 @@
 <?php
-namespace aop\utils;
 
-use aop\Config;
+namespace cloudpay\utils;
+
+use cloudpay\Config;
 use RuntimeException;
 
 /**
  * 签名辅助类
  * 
- * @author 余小波 <1421926943@qq.com>
+ * @author 余小波 <yuxiaobo64@gmail.com>
  */
-class SignUtil {
+class SignUtil
+{
 
     protected $params;
     protected $config;
 
-    public function __construct(Config $config, array $params) {
+    public function __construct(Config $config, array $params)
+    {
         $this->config = $config;
         $this->params = $params;
     }
@@ -25,7 +28,8 @@ class SignUtil {
      * @param array $params
      * @return string
      */
-    protected function getSignContents(array $params):string {
+    protected function getSignContents(array $params): string
+    {
         ksort($params);
         $query_params = "";
         $i = 0;
@@ -50,7 +54,8 @@ class SignUtil {
      *
      * @return string
      */
-    public function generate():string {
+    public function generate(): string
+    {
         return $this->sign($this->getSignContents($this->params), $this->config->getSignType());
     }
 
@@ -61,7 +66,8 @@ class SignUtil {
      * @param string $signType
      * @return string
      */
-    protected function sign($data, $signType = "RSA"){
+    protected function sign($data, $signType = "RSA")
+    {
         if (CommonUtil::checkEmpty($this->config->getRsaPrivateKeyFilePath())) {
             $priKey = $this->config->getRsaPrivateKey();
             $res = "-----BEGIN RSA PRIVATE KEY-----\n" .
@@ -104,5 +110,43 @@ class SignUtil {
             }
         }
         return $data;
+    }
+
+
+    /**
+     * 验签
+     *
+     * @param string $sign 要校对的的签名结果
+     * @return bool 验证结果
+     */
+    public function checkSign($sign)
+    {
+        $data = $this->getSignContents($this->params);
+        $signType = $this->config->getSignType();
+        $public_key = $this->config->getAliPublicKey();
+
+        $search = [
+            "-----BEGIN PUBLIC KEY-----",
+            "-----END PUBLIC KEY-----",
+            "\n",
+            "\r",
+            "\r\n"
+        ];
+        $public_key = str_replace($search, "", $public_key);
+        $public_key = $search[0] . PHP_EOL . wordwrap($public_key, 64, "\n", true) . PHP_EOL . $search[1];
+        $res = openssl_get_publickey($public_key);
+        if ($res) {
+            if ("RSA" == $signType) {
+                $result = (bool)openssl_verify($data, base64_decode($sign), $res);
+                openssl_free_key($res);
+            } else if ("RSA2" == $signType) {
+                //签名 RSA2
+                $result = (bool)openssl_verify($data, base64_decode($sign), $res, OPENSSL_ALGO_SHA256);
+                openssl_free_key($res);
+            }
+        } else {
+            throw new RuntimeException('签名异常');
+        }
+        return $result;
     }
 }

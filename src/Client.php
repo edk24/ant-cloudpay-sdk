@@ -1,14 +1,15 @@
 <?php
 
-namespace aop;
+namespace cloudpay;
 
-use aop\utils\SignUtil;
+use cloudpay\utils\CommonUtil;
+use cloudpay\utils\SignUtil;
 use RuntimeException;
 
 /**
  * 云支付 请求客户端
  * 
- * @author 余小波 <1421926943@qq.com>
+ * @author 余小波 <yuxiaobo64@gmail.com>
  */
 class Client
 {
@@ -17,7 +18,7 @@ class Client
     /**
      * 云支付配置
      *
-     * @var \aop\Config
+     * @var \cloudpay\Config
      */
     protected $config;
 
@@ -38,7 +39,7 @@ class Client
      *
      * @param string $method 方法
      * @param array $biz_content 参数
-     * @return \aop\Response
+     * @return \cloudpay\Response
      */
     public function execute(string $method, array $biz_content): Response {
 
@@ -48,7 +49,7 @@ class Client
             'b_app_id'          => $this->config->getBAppId(),
             'version'           => $this->config->getVersion(),
             'method'            => $method,
-            'req_id'            => time(), // TODO 请求ID
+            'req_id'            => CommonUtil::uuid(), // TODO 请求ID
             'charset'           => $this->config->getCharset(),
             'timestamp'         => time(),
             'sign_type'         => $this->config->getSignType(),
@@ -65,20 +66,23 @@ class Client
         return new Response($response->getBody()->getContents());
     }
 
-    
 
-    
-
-    // private function setupCharsets($request){
-    //     if ($this->checkEmpty($this->config->getCharset())) {
-    //         $this->charset = 'UTF-8';
-    //     }
-    //     $str = preg_match('/[\x80-\xff]/', $this->b_app_id) ? $this->b_app_id : print_r($request, true);
-    //     $this->fileCharset = mb_detect_encoding($str, "UTF-8, GBK") == 'UTF-8' ? 'UTF-8' : 'GBK';
-    // }
-
-
-    
+    /**
+     * 验证签名 (验签成功需要返回"success"字符串,  否则视为失败, 云支付会分批重复回调, 详见: https://www.yuque.com/docs/share/c9e415da-70be-4004-852a-3b510fb43b07#pLCPN)
+     *
+     * @param array $params
+     * @return boolean
+     * @throws RuntimeException
+     */
+    public function checkSign(array $params):bool
+    {
+        $headers = getallheaders();
+        if (isset($headers['X-Ca-Signature']) == false || empty($headers['X-Ca-Signature'])) {
+            throw new RuntimeException('签名值异常');
+        }
+        $sign = $headers['X-Ca-Signature'];
+        return (new SignUtil($this->config, $params))->checkSign($sign);
+    }
 
     
 }
