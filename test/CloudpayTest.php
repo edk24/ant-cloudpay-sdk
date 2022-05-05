@@ -37,7 +37,7 @@ class CloudpayTest extends TestCase  {
             'out_order_no'      => time(),
             'scene'             => 'bar_code',
             'total_amount'      => '0.01',
-            'auth_code'         => '130382785921609680',
+            'auth_code'         => '130245232381316480',
             'subject'           => 'Iphone6 16G',
             'body'              => 'Iphone6 16G',
             'notify_url'        => 'https://gzhs-iot.dev.ioi.plus/api/alipay/callback',
