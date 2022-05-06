@@ -1,10 +1,10 @@
 {
-    "name": "yuxiaobo/aop_cloud",
-    "description": "支付宝云支付非官方SDK",
+    "name": "yuxiaobo/ant-cloudpay-sdk",
+    "description": "支付宝|蚂蚁云支付SDK",
     "license": "mit",
     "authors": [
         {
-            "name": "edk24",
+            "name": "余晓波",
             "email": "yuxiaobo64@gmail.com"
         }
     ],
@@ -19,6 +19,7 @@
       },
     "minimum-stability": "dev",
     "require-dev": {
+        "php": ">=7.3",
         "phpunit/phpunit": "9.5.x-dev"
     }
 }

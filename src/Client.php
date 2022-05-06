@@ -70,7 +70,7 @@ class Client
     /**
      * 验证签名 (验签成功需要返回"success"字符串,  否则视为失败, 云支付会分批重复回调, 详见: https://www.yuque.com/docs/share/c9e415da-70be-4004-852a-3b510fb43b07#pLCPN)
      *
-     * @param array $params
+     * @param array $params (需要使用 strip_tags 去除html标签)
      * @return boolean
      * @throws RuntimeException
      */
