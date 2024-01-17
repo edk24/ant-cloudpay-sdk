@@ -2,6 +2,7 @@
     "name": "yuxiaobo/ant-cloudpay-sdk",
     "description": "支付宝|蚂蚁云支付SDK",
     "license": "mit",
+    "keywords": ["支付宝","蚂蚁云支付","ant-cloudpay"],
     "authors": [
         {
             "name": "余晓波",
@@ -9,7 +10,8 @@
         }
     ],
     "require": {
-        "guzzlehttp/guzzle": "~6.0"
+        "php": "^7.2.5 || ^8.0",
+        "guzzlehttp/guzzle": "^7"
     },
     "autoload": {
         "psr-4": {
@@ -19,7 +21,6 @@
       },
     "minimum-stability": "dev",
     "require-dev": {
-        "php": ">=7.3",
-        "phpunit/phpunit": "9.5.x-dev"
+        "phpunit/phpunit": ">=9.6"
     }
 }
